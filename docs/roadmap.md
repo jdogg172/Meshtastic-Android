@@ -1,6 +1,6 @@
 # Roadmap
 
-> Last updated: 2026-03-17
+> Last updated: 2026-03-22
 
 Forward-looking priorities for the Meshtastic KMP multi-target effort. For current state, see [`kmp-status.md`](./kmp-status.md). For the full gap analysis, see [`decisions/architecture-review-2026-03.md`](./decisions/architecture-review-2026-03.md).
 
@@ -42,7 +42,7 @@ These items address structural gaps identified in the March 2026 architecture re
     -   Test navigation flows end-to-end
 2.  **Tier 2: Polish (High Priority)**
     -   Additional desktop-specific settings polish
-    -   ✅ **MenuBar integration** and Keyboard shortcuts
+    -   ✅ **Right-click mirrors long-click** across all shared UI components (`Modifier.onRightClick` in `core:ui`)
     -   Window management
     -   State persistence
 3.  **Tier 3: Advanced (Nice-to-have)**
@@ -74,7 +74,7 @@ These items address structural gaps identified in the March 2026 architecture re
 | Charts | ✅ Vico KMP charts wired in commonMain (Device, Environment, Signal, Power, Pax) |
 | Debug Panel | ✅ Real screen (mesh log viewer via shared `DebugViewModel`) |
 | Notifications | ✅ Desktop native notifications with system tray icon support |
-| MenuBar | ✅ Done — Native application menu bar with File/View menus |
+| Right-click UX | ✅ Done — `Modifier.onRightClick` mirrors long-click across all shared components |
 | About | ✅ Shared `commonMain` screen (AboutLibraries KMP `produceLibraries` + per-platform JSON) |
 | Packaging | ✅ Done — Native distribution pipeline in CI (DMG, MSI, DEB) |
 

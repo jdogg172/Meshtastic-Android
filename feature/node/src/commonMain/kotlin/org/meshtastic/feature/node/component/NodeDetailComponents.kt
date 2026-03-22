@@ -54,6 +54,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.meshtastic.core.resources.Res
 import org.meshtastic.core.resources.copy
 import org.meshtastic.core.ui.util.createClipEntry
+import org.meshtastic.core.ui.util.onRightClick
 
 @Composable
 internal fun SectionCard(
@@ -95,17 +96,20 @@ internal fun InfoItem(
     val coroutineScope = rememberCoroutineScope()
     val copyLabel = stringResource(Res.string.copy)
 
+    val copyAction = { coroutineScope.launch { clipboard.setClipEntry(createClipEntry(value, label)) } }
+
     Column(
         modifier =
         modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = 48.dp) // Minimum touch target height
             .combinedClickable(
-                onLongClick = { coroutineScope.launch { clipboard.setClipEntry(createClipEntry(value, label)) } },
+                onLongClick = { copyAction() },
                 onLongClickLabel = copyLabel, // Clear intent for accessibility
                 onClick = {},
                 role = Role.Button,
             )
+            .onRightClick { copyAction() }
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .semantics(mergeDescendants = true) {
                 // Screen readers read as a unified data unit

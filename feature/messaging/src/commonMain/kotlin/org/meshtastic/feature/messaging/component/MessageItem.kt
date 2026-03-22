@@ -74,6 +74,7 @@ import org.meshtastic.core.ui.icon.Hops
 import org.meshtastic.core.ui.icon.MeshtasticIcons
 import org.meshtastic.core.ui.theme.MessageItemColors
 import org.meshtastic.core.ui.util.createClipEntry
+import org.meshtastic.core.ui.util.onRightClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Suppress("LongMethod", "CyclomaticComplexMethod")
@@ -241,6 +242,12 @@ fun MessageItem(
                 },
                 onDoubleClick = onDoubleClick,
             )
+            .onRightClick {
+                onLongClick()
+                if (!inSelectionMode) {
+                    activeSheet = ActiveSheet.Actions
+                }
+            }
             .then(messageModifier)
             .semantics(mergeDescendants = true) {
                 val senderName = if (message.fromLocal) ourNode.user.long_name else node.user.long_name

@@ -75,6 +75,7 @@ import org.meshtastic.core.ui.component.Snr
 import org.meshtastic.core.ui.emoji.EmojiPickerDialog
 import org.meshtastic.core.ui.icon.Hops
 import org.meshtastic.core.ui.icon.MeshtasticIcons
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.feature.messaging.DeliveryInfo
 
 @Composable
@@ -93,6 +94,7 @@ internal fun ReactionItem(
         modifier =
         modifier
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .onRightClick(onLongClick)
             .then(if (isSending) Modifier.graphicsLayer(alpha = 0.5f) else Modifier),
         color =
         when {

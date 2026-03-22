@@ -54,6 +54,7 @@ import org.meshtastic.core.ui.theme.StatusColors.StatusGreen
 import org.meshtastic.core.ui.theme.StatusColors.StatusOrange
 import org.meshtastic.core.ui.theme.StatusColors.StatusYellow
 import org.meshtastic.core.ui.util.annotateNeighborInfo
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.feature.node.component.CooldownIconButton
 import org.meshtastic.feature.node.detail.NodeRequestEffect
 
@@ -130,22 +131,26 @@ fun NeighborInfoLogScreen(modifier: Modifier = Modifier, viewModel: MetricsViewM
                         text = "$time - $text",
                         contentDescription = stringResource(Res.string.neighbor_info),
                         modifier =
-                        Modifier.combinedClickable(onLongClick = { expanded = true }) {
-                            result
-                                ?.fromRadio
-                                ?.packet
-                                ?.getNeighborInfoResponse(::getUsername, header = header)
-                                ?.let {
-                                    val message =
-                                        annotateNeighborInfo(
-                                            it,
-                                            statusGreen = statusGreen,
-                                            statusYellow = statusYellow,
-                                            statusOrange = statusOrange,
-                                        )
-                                    viewModel.showLogDetail(Res.string.neighbor_info, message)
-                                }
-                        },
+                        Modifier.combinedClickable(
+                            onLongClick = { expanded = true },
+                            onClick = {
+                                result
+                                    ?.fromRadio
+                                    ?.packet
+                                    ?.getNeighborInfoResponse(::getUsername, header = header)
+                                    ?.let {
+                                        val message =
+                                            annotateNeighborInfo(
+                                                it,
+                                                statusGreen = statusGreen,
+                                                statusYellow = statusYellow,
+                                                statusOrange = statusOrange,
+                                            )
+                                        viewModel.showLogDetail(Res.string.neighbor_info, message)
+                                    }
+                            },
+                        )
+                            .onRightClick { expanded = true },
                     )
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DeleteItem {

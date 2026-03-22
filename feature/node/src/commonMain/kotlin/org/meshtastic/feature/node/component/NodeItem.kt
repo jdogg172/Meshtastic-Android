@@ -89,6 +89,8 @@ import org.meshtastic.core.ui.component.determineSignalQuality
 import org.meshtastic.core.ui.icon.AirUtilization
 import org.meshtastic.core.ui.icon.ChannelUtilization
 import org.meshtastic.core.ui.icon.MeshtasticIcons
+import org.meshtastic.core.ui.util.onRightClick
+import org.meshtastic.core.ui.util.thenIf
 import org.meshtastic.proto.Config
 
 private const val ACTIVE_ALPHA = 0.5f
@@ -153,7 +155,10 @@ fun NodeItem(
     Card(modifier = modifier.fillMaxWidth(), colors = cardColors) {
         Column(
             modifier =
-            Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick).fillMaxWidth().padding(12.dp),
+            Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+                .thenIf(onLongClick != null) { onRightClick { onLongClick?.invoke() } }
+                .fillMaxWidth()
+                .padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             NodeItemHeader(

@@ -58,6 +58,7 @@ import org.meshtastic.core.resources.network
 import org.meshtastic.core.resources.serial
 import org.meshtastic.core.ui.component.NodeChip
 import org.meshtastic.core.ui.component.Rssi
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.feature.connections.model.DeviceListEntry
 
 private const val RSSI_UPDATE_RATE_MS = 2000L
@@ -113,7 +114,7 @@ fun DeviceListItem(
 
     val clickableModifier =
         if (onDelete != null) {
-            Modifier.combinedClickable(onClick = onSelect, onLongClick = onDelete)
+            Modifier.combinedClickable(onClick = onSelect, onLongClick = onDelete).onRightClick { onDelete() }
         } else {
             Modifier.clickable(onClick = onSelect)
         }

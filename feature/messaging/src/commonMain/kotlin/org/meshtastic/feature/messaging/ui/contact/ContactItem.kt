@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import org.meshtastic.core.common.util.DateFormatter
 import org.meshtastic.core.model.Contact
 import org.meshtastic.core.ui.component.SecurityIcon
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.proto.ChannelSet
 
 @Suppress("LongMethod")
@@ -88,6 +89,7 @@ fun ContactItem(
         modifier =
         modifier
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .onRightClick(onLongClick)
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .semantics { contentDescription = shortName },

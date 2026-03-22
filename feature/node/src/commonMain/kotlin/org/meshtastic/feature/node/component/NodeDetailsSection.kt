@@ -89,6 +89,7 @@ import org.meshtastic.core.ui.icon.Verified
 import org.meshtastic.core.ui.icon.role
 import org.meshtastic.core.ui.util.createClipEntry
 import org.meshtastic.core.ui.util.formatAgo
+import org.meshtastic.core.ui.util.onRightClick
 
 @Composable
 fun NodeDetailsSection(node: Node, modifier: Modifier = Modifier) {
@@ -324,20 +325,23 @@ private fun PublicKeyItem(publicKeyBytes: ByteArray) {
     val label = stringResource(Res.string.public_key)
     val copyLabel = stringResource(Res.string.copy)
 
+    val copyAction = {
+        if (!isMismatch) {
+            coroutineScope.launch { clipboard.setClipEntry(createClipEntry(publicKeyBase64, label)) }
+        }
+    }
+
     Column(
         modifier =
         Modifier.fillMaxWidth()
             .defaultMinSize(minHeight = 48.dp)
             .combinedClickable(
-                onLongClick = {
-                    if (!isMismatch) {
-                        coroutineScope.launch { clipboard.setClipEntry(createClipEntry(publicKeyBase64, label)) }
-                    }
-                },
+                onLongClick = { copyAction() },
                 onLongClickLabel = copyLabel,
                 onClick = {},
                 role = Role.Button,
             )
+            .onRightClick { copyAction() }
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .semantics(mergeDescendants = true) { contentDescription = "$label: $publicKeyBase64" },
     ) {

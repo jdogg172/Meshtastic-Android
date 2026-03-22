@@ -16,7 +16,12 @@
  */
 package org.meshtastic.core.ui.util
 
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerButton
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 
 /**
  * Conditionally applies the [action] to the receiver [Modifier] if [precondition] is true. Otherwise, returns the
@@ -24,3 +29,18 @@ import androidx.compose.ui.Modifier
  */
 inline fun Modifier.thenIf(precondition: Boolean, action: Modifier.() -> Modifier): Modifier =
     if (precondition) action() else this
+
+/**
+ * Adds a secondary (right) mouse-button click handler. On touch-only platforms the secondary button event never fires,
+ * so this is a safe no-op. Intended to mirror `onLongClick` behavior for desktop users who expect right-click context
+ * actions.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.onRightClick(action: () -> Unit): Modifier = pointerInput(action) {
+    awaitEachGesture {
+        val event = awaitPointerEvent()
+        if (event.type == PointerEventType.Press && event.button == PointerButton.Secondary) {
+            action()
+        }
+    }
+}

@@ -49,6 +49,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.meshtastic.core.resources.Res
 import org.meshtastic.core.resources.copy
 import org.meshtastic.core.ui.util.createClipEntry
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.core.ui.util.thenIf
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,17 +67,20 @@ fun InfoCard(
     val shape = MaterialTheme.shapes.medium
     val copyLabel = stringResource(Res.string.copy)
 
+    val copyAction = { coroutineScope.launch { clipboard.setClipEntry(createClipEntry(value, text)) } }
+
     Card(
         modifier =
         modifier
             .defaultMinSize(minHeight = 48.dp)
             .clip(shape)
             .combinedClickable(
-                onLongClick = { coroutineScope.launch { clipboard.setClipEntry(createClipEntry(value, text)) } },
+                onLongClick = { copyAction() },
                 onLongClickLabel = copyLabel,
                 onClick = {},
                 role = Role.Button,
             )
+            .onRightClick { copyAction() }
             .semantics(mergeDescendants = true) { contentDescription = "$text: $value" },
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),

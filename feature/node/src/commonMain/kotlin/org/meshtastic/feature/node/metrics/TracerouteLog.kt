@@ -70,6 +70,7 @@ import org.meshtastic.core.ui.theme.StatusColors.StatusGreen
 import org.meshtastic.core.ui.theme.StatusColors.StatusOrange
 import org.meshtastic.core.ui.theme.StatusColors.StatusYellow
 import org.meshtastic.core.ui.util.annotateTraceroute
+import org.meshtastic.core.ui.util.onRightClick
 import org.meshtastic.feature.map.model.TracerouteOverlay
 import org.meshtastic.feature.node.component.CooldownIconButton
 import org.meshtastic.feature.node.detail.NodeRequestEffect
@@ -196,37 +197,41 @@ fun TracerouteLogScreen(
                         text = stringResource(Res.string.traceroute_time_and_text, time, text),
                         contentDescription = stringResource(Res.string.traceroute),
                         modifier =
-                        Modifier.combinedClickable(onLongClick = { expanded = true }) {
-                            val dialogMessage =
-                                tracerouteDetailsAnnotated
-                                    ?: result
-                                        ?.fromRadio
-                                        ?.packet
-                                        ?.getTracerouteResponse(
-                                            ::getUsername,
-                                            headerTowards = headerTowardsStr,
-                                            headerBack = headerBackStr,
-                                        )
-                                        ?.let {
-                                            annotateTraceroute(
-                                                it,
-                                                statusGreen = statusGreen,
-                                                statusYellow = statusYellow,
-                                                statusOrange = statusOrange,
+                        Modifier.combinedClickable(
+                            onLongClick = { expanded = true },
+                            onClick = {
+                                val dialogMessage =
+                                    tracerouteDetailsAnnotated
+                                        ?: result
+                                            ?.fromRadio
+                                            ?.packet
+                                            ?.getTracerouteResponse(
+                                                ::getUsername,
+                                                headerTowards = headerTowardsStr,
+                                                headerBack = headerBackStr,
                                             )
-                                        }
-                            dialogMessage?.let {
-                                val responseLogUuid = result?.uuid ?: return@combinedClickable
-                                viewModel.showTracerouteDetail(
-                                    annotatedMessage = it,
-                                    requestId = log.fromRadio.packet?.id ?: 0,
-                                    responseLogUuid = responseLogUuid,
-                                    overlay = overlay,
-                                    onViewOnMap = onViewOnMap,
-                                    onShowError = { /* Handle error */ },
-                                )
-                            }
-                        },
+                                            ?.let {
+                                                annotateTraceroute(
+                                                    it,
+                                                    statusGreen = statusGreen,
+                                                    statusYellow = statusYellow,
+                                                    statusOrange = statusOrange,
+                                                )
+                                            }
+                                dialogMessage?.let {
+                                    val responseLogUuid = result?.uuid ?: return@combinedClickable
+                                    viewModel.showTracerouteDetail(
+                                        annotatedMessage = it,
+                                        requestId = log.fromRadio.packet?.id ?: 0,
+                                        responseLogUuid = responseLogUuid,
+                                        overlay = overlay,
+                                        onViewOnMap = onViewOnMap,
+                                        onShowError = { /* Handle error */ },
+                                    )
+                                }
+                            },
+                        )
+                            .onRightClick { expanded = true },
                     )
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                         DeleteItem {
