@@ -25,8 +25,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,7 +47,6 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.meshtastic.core.model.ConnectionState
-import org.meshtastic.core.model.DeviceType
 import org.meshtastic.core.navigation.Route
 import org.meshtastic.core.navigation.SettingsRoute
 import org.meshtastic.core.resources.Res
@@ -73,13 +70,10 @@ import org.meshtastic.core.ui.viewmodel.ConnectionsViewModel
 import org.meshtastic.feature.connections.NO_DEVICE_SELECTED
 import org.meshtastic.feature.connections.ScannerViewModel
 import org.meshtastic.feature.connections.model.DeviceListEntry
-import org.meshtastic.feature.connections.ui.components.BLEDevices
 import org.meshtastic.feature.connections.ui.components.ConnectingDeviceInfo
-import org.meshtastic.feature.connections.ui.components.ConnectionsSegmentedBar
 import org.meshtastic.feature.connections.ui.components.CurrentlyConnectedInfo
+import org.meshtastic.feature.connections.ui.components.DeviceList
 import org.meshtastic.feature.connections.ui.components.EmptyStateContent
-import org.meshtastic.feature.connections.ui.components.NetworkDevices
-import org.meshtastic.feature.connections.ui.components.UsbDevices
 import org.meshtastic.feature.settings.navigation.ConfigRoute
 import org.meshtastic.feature.settings.navigation.getNavRouteFrom
 import org.meshtastic.feature.settings.radio.RadioConfigViewModel
@@ -111,6 +105,8 @@ fun ConnectionsScreen(
     val discoveredTcpDevices by scanModel.discoveredTcpDevicesForUi.collectAsStateWithLifecycle()
     val recentTcpDevices by scanModel.recentTcpDevicesForUi.collectAsStateWithLifecycle()
     val usbDevices by scanModel.usbDevicesForUi.collectAsStateWithLifecycle()
+    val isBleScanning by scanModel.isBleScanning.collectAsStateWithLifecycle()
+    val isNetworkScanning by scanModel.isNetworkScanning.collectAsStateWithLifecycle()
 
     /* Animate waiting for the configurations */
     var isWaiting by remember { mutableStateOf(false) }
@@ -209,69 +205,23 @@ fun ConnectionsScreen(
                     }
                 }
 
-                var selectedDeviceType by remember { mutableStateOf(DeviceType.BLE) }
-                LaunchedEffect(selectedDevice) {
-                    DeviceType.fromAddress(selectedDevice)?.let { selectedDeviceType = it }
-                }
-
-                val supportedDeviceTypes = scanModel.supportedDeviceTypes
-
-                // Fallback to a supported type if the current one isn't
-                LaunchedEffect(supportedDeviceTypes) {
-                    if (selectedDeviceType !in supportedDeviceTypes && supportedDeviceTypes.isNotEmpty()) {
-                        selectedDeviceType = supportedDeviceTypes.first()
-                    }
-                }
-
-                ConnectionsSegmentedBar(
-                    selectedDeviceType = selectedDeviceType,
-                    supportedDeviceTypes = supportedDeviceTypes,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    selectedDeviceType = it
-                }
-
+                // ── Unified device list (replaces tab bar + per-transport composables) ──
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                    when (selectedDeviceType) {
-                        DeviceType.BLE -> {
-                            BLEDevices(
-                                connectionState = connectionState,
-                                selectedDevice = selectedDevice,
-                                scanModel = scanModel,
-                            )
-                        }
-
-                        DeviceType.TCP -> {
-                            Column(
-                                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                NetworkDevices(
-                                    connectionState = connectionState,
-                                    discoveredNetworkDevices = discoveredTcpDevices,
-                                    recentNetworkDevices = recentTcpDevices,
-                                    selectedDevice = selectedDevice,
-                                    scanModel = scanModel,
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
-
-                        DeviceType.USB -> {
-                            Column(
-                                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                UsbDevices(
-                                    connectionState = connectionState,
-                                    usbDevices = usbDevices,
-                                    selectedDevice = selectedDevice,
-                                    scanModel = scanModel,
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
-                    }
+                    DeviceList(
+                        connectionState = connectionState,
+                        selectedDevice = selectedDevice,
+                        bleDevices = bleDevices,
+                        usbDevices = usbDevices,
+                        discoveredTcpDevices = discoveredTcpDevices,
+                        recentTcpDevices = recentTcpDevices,
+                        isBleScanning = isBleScanning,
+                        isNetworkScanning = isNetworkScanning,
+                        scanModel = scanModel,
+                        onToggleBleScan = { if (isBleScanning) scanModel.stopBleScan() else scanModel.startBleScan() },
+                        onToggleNetworkScan = {
+                            if (isNetworkScanning) scanModel.stopNetworkScan() else scanModel.startNetworkScan()
+                        },
+                    )
                 }
             }
             scanStatusText?.let {
