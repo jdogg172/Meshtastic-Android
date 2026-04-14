@@ -14,9 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.meshtastic.app.di
+package org.meshtastic.feature.map.model
 
-import org.koin.core.annotation.Module
+import com.mapbox.maps.Style
 
-@Module(includes = [GoogleNetworkModule::class])
-class FlavorModule
+/**
+ * Predefined map styles available in the Mapbox POC.
+ *
+ * Mapbox Standard and Standard Satellite are the flagship Mapbox styles and require a valid access token. The others
+ * are Mapbox-hosted equivalents.
+ */
+enum class MapStyle(val styleUri: String) {
+    Standard(Style.STANDARD),
+    Satellite(Style.SATELLITE_STREETS),
+    Outdoors(Style.OUTDOORS),
+    Light(Style.LIGHT),
+    Dark(Style.DARK),
+}

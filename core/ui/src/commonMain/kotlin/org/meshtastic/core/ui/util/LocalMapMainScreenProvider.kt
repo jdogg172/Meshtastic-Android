@@ -21,8 +21,10 @@ import androidx.compose.runtime.compositionLocalOf
 import org.meshtastic.core.ui.component.PlaceholderScreen
 
 /**
- * Provides the platform-specific Map Main Screen. On Desktop or JVM targets where native maps aren't available yet, it
- * falls back to a [PlaceholderScreen].
+ * Provides the platform-specific Map Main Screen. On Desktop or JVM targets where native maps
+ * aren't available yet, it falls back to a [PlaceholderScreen].
+ *
+ * On Android this is wired to [org.meshtastic.feature.map.MapScreen] via [MainActivity].
  */
 @Suppress("Wrapping")
 val LocalMapMainScreenProvider =

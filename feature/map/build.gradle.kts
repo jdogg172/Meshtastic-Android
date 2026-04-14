@@ -43,5 +43,10 @@ kotlin {
             implementation(projects.core.ui)
             implementation(projects.core.di)
         }
+        androidMain.dependencies {
+            implementation(libs.mapbox.maps.android)
+            implementation(libs.mapbox.maps.compose)
+            implementation(libs.accompanist.permissions)
+        }
     }
 }

@@ -79,6 +79,19 @@ dependencyResolutionManagement {
                 includeGroupByRegex("com\\.github\\..*")
             }
         }
+        // Mapbox Maven repository — requires a Mapbox secret token with DOWNLOADS:READ scope.
+        // Set MAPBOX_DOWNLOADS_TOKEN in ~/.gradle/gradle.properties or as an env var.
+        maven {
+            url = uri("https://api.mapbox.com/downloads/v2/releases/maven")
+            authentication { create<BasicAuthentication>("basic") }
+            credentials {
+                username = "mapbox"
+                password = providers.gradleProperty("MAPBOX_DOWNLOADS_TOKEN")
+                    .orElse(providers.environmentVariable("MAPBOX_DOWNLOADS_TOKEN"))
+                    .orElse("")
+                    .get()
+            }
+        }
     }
 }
 

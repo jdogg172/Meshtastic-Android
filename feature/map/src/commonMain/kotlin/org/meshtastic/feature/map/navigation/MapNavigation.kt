@@ -21,10 +21,13 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import org.meshtastic.core.navigation.MapRoute
 import org.meshtastic.core.navigation.NodesRoute
+import org.meshtastic.core.ui.util.LocalMapMainScreenProvider
 
 fun EntryProviderScope<NavKey>.mapGraph(backStack: NavBackStack<NavKey>) {
     entry<MapRoute.Map> { args ->
-        val mapScreen = org.meshtastic.core.ui.util.LocalMapMainScreenProvider.current
+        // LocalMapMainScreenProvider is wired to MapScreen (Mapbox) on Android and
+        // to a PlaceholderScreen on Desktop until a desktop map implementation is added.
+        val mapScreen = LocalMapMainScreenProvider.current
         mapScreen(
             { id -> backStack.add(NodesRoute.NodeDetail(id)) }, // onClickNodeChip
             { id -> backStack.add(NodesRoute.NodeDetail(id)) }, // navigateToNodeDetails
